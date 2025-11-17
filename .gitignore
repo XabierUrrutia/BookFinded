@@ -97,3 +97,6 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Vuforia specific - Added to prevent uploading Vuforia library
+/[Pp]ackages/com.ptc.vuforia.engine*
