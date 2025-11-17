@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vuforia:
     vuforiaLicenseKey: AVnesxr/////AAABmVUM3cypb091miE2BlPplih0PJKpGAlM/nWX0hnGuHpQn1x6cQUdgi9BGWDTOVbubaLcryioofYNoudU5MDmeZY+EsgRi4V+LyaVtmqjlfBHTTtCtMhL7AmvGpLulxmpOp+KOrugQN49rbpJXCqRa5/0p154b+MvPe0CzidUokbTSMFQGyhX/Iy+ivR7KsY0IGtGzywOumg02/BIfFBxR0MfnpwB7upJMea8VcHtY7eKKwMuDs9HL7pYfsNTKM7PU3kWv8nD+AKWPK9XrT/8MmQ16OV63EHlSJjh7yAfRL7LpVbo0xifUhHGwAqXa9tn1crMY2t4R/1+cCKawvdwBF8+3hMDXNwNKuRp8faOwWjI
-    ufoLicenseKey: QVRSQUVXUC8vLy8vQUFBQUtCSzZuZnFURlVDUGtBYitFMnAyRFdOSTNQRTMzUkdad3A5c1llazlxbW1hYUFGY3RBcDNXV1puTDI1NGFOVjRjbk1sczQrbXdjRThLb0YyZHRLRzJtYnJPdVBxeWJEN1pMd3hLZGZNQVhXUWJmOWV2bzFEMnFta0Rsd1JzbFoxQldmbS9JejU0aXdtY1VDRzJtZU5PRFE5Q2orWHdySjNBK0V1aWdkRC92eVBGSklGZDRTamVHbEFaMUJjTkt1aUFybHJET2tFaG8yS3dNc3JaMmJGK2NMVTVFUnQ1LzlTcUwwVVVIN2MvYUlvc1JvSk9aZUI5NEdVS1FxMW9IcmI2UkU5UzdtRG1pZG9LVVFHYVdyWWhpcllNOGhEc0hkVGM2R3Z0cUUrVnJnbVhoSXlsV0pDM3k2MmI4SjE3RnZyN3R4Ym1LRW5hVHFhQ0ZzL2lDWE15a1FUWkp1MXk1K25LaGJvZnZxZlQweGI=
+    ufoLicenseKey: QVZPa2N1ai8vLy8vQUFBQUtFVndtZ3daelVUeHU0bm5uOHBLdHFjS21OS1FmeXJ6OUVuVWlpVDdoSEVDb0hGNFE1TUNXVzY4Ukh5MVd6UmhMWUVYeGZOWERVN3JlUEVkYjRtN01ReEFlMmRHRGY5bTNoSTVWM0tEM1BZQkVlc0NpZ3hMRlpHcVltbDFBUE9UbmdGNHhVU05XVEVkYWpveW9vUmdGRDV5RytjTDBKSVBiRFR4ZlR6d1c3cC93M1N4Y3RwWThaeEVwbEl4cml2dkNmYU9PV1lZUFFBb2ZMYUM0Wkk1SXZ2U2NEaDVpLzBWVEY1WEVVYUtFZnRON2pTdHV0c2RTU1QvTVZqN3JYQTc2dGM4TDk5MDA3N3VXUzFmSXBGb1JOTmwrbDI0Q0M1ODI3cVhnWUN0NnpJTHVneTYrdHBzbTVqaWxSTVltMjNuRkFHYWFQSGxjdXB1bTI2bE01aEk3Wmt4bjBka3FLZEpiYktQRlVINDNhRE4=
     delayedInitialization: 0
     cameraFocusModeSetting: 2
     cameraDeviceModeSetting: -1
@@ -24,31 +24,34 @@ MonoBehaviour:
     shareRecordingsInITunes: 0
     logLevel: 0
     version: 11.4.4
-    eulaAcceptedVersions: '{"Values":["11.4"]}'
+    eulaAcceptedVersions: '{"Values":["","11.4","0.0"]}'
   database:
     disableModelExtraction: 0
   plugins:
-    pluginDirectory: asset://Vuforia
+    pluginDirectory: Vuforia
   shaders:
     depthMaskShader: {fileID: 4800000, guid: 9894afa5f3a5e4bbca625981beb1b20e, type: 3}
     outlineShader: {fileID: 4800000, guid: 88d3b6b5cf364476ca39fcec255331b1, type: 3}
-    unlitTransparentShader: {fileID: 10750, guid: 0000000000000000f000000000000000, type: 0}
+    unlitTransparentShader: {fileID: 10750, guid: 0000000000000000f000000000000000,
+      type: 0}
   runtimeResources:
-    register: {fileID: 11400000, guid: 41fc44d3a90764cc7b50f1019f2d8310, type: 2}
+    register: {fileID: 11400000, guid: caeba6ecda451416c803389918ddea4a, type: 2}
   videoBackground:
     numDivisions: 2
-    videoBackgroundShader: {fileID: 4800000, guid: 144dfca22ac584ade9e538e24a5ddded, type: 3}
+    videoBackgroundShader: {fileID: 4800000, guid: 144dfca22ac584ade9e538e24a5ddded,
+      type: 3}
     unlitShader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
     videoBackgroundEnabled: 1
   deviceTracker:
     autoStartTracker: 1
     arcoreRequirement: 1
     autoImportArcore: 1
-    thirdPartyARCoreClientDetected: 1
+    thirdPartyARCoreClientDetected: 0
   playmode:
     mRecordingPath: 
     playModeType: 0
-    mSimulatorInputActionAsset: {fileID: -944628639613478452, guid: eae7022f5cfd04e8189b1f372421b225, type: 3}
+    mSimulatorInputActionAsset: {fileID: -944628639613478452, guid: eae7022f5cfd04e8189b1f372421b225,
+      type: 3}
   webcam:
     renderTextureLayer: 30
   packageInformation:
