@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d39424571dcf2247aeda9b2736fb7c1, type: 3}
+  m_Name: Shelf-Music
+  m_EditorClassIdentifier: 
+  shelfID: 0
+  displayName: Music
+  qrImageName: qr-code
+  mainTheme: Music
+  themeDescription: Music is an importnat part of our live
+  themeColor: {r: 0.1, g: 0.3, b: 0.7, a: 1}
+  themeIcon: {fileID: 0}
+  books:
+  - {fileID: 11400000, guid: 98aa91ff5ad283c44a0783ceb270289d, type: 2}
+  - {fileID: 11400000, guid: 6cdbc9725450a704faf49912f05e415c, type: 2}
+  totalBooks: 2
+  availableGenres:
+  - Music
