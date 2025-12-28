@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d39424571dcf2247aeda9b2736fb7c1, type: 3}
   m_Name: Shelf-Music
   m_EditorClassIdentifier: 
+  shelfPrefab3D: {fileID: 4708055353662892481, guid: a03eb6b3e0d2fcb4196030a2245b03ba,
+    type: 3}
   shelfID: 0
   displayName: Music
   qrImageName: qr-code
@@ -22,6 +24,10 @@ MonoBehaviour:
   books:
   - {fileID: 11400000, guid: 98aa91ff5ad283c44a0783ceb270289d, type: 2}
   - {fileID: 11400000, guid: 6cdbc9725450a704faf49912f05e415c, type: 2}
-  totalBooks: 2
+  - {fileID: 11400000, guid: 426de253811a62045a959f6d21d89a11, type: 2}
+  - {fileID: 11400000, guid: 26591681f9c4fbb4a8f9363339cb3810, type: 2}
+  - {fileID: 11400000, guid: 481c9964abde36442a0e0655ba8fa93d, type: 2}
+  - {fileID: 11400000, guid: 05dca699d77f6674cb482c656a89ac53, type: 2}
+  totalBooks: 6
   availableGenres:
   - Music

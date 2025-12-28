@@ -32,21 +32,16 @@ public class QRConnector : MonoBehaviour
 
     void OnTargetStatusChanged(ObserverBehaviour behaviour, TargetStatus targetStatus)
     {
-        if (libraryManager == null)
-        {
-            Debug.LogError("LibraryARManager no asignado en QRConnector");
-            return;
-        }
+        if (libraryManager == null) return;
 
         if (targetStatus.Status == Status.TRACKED ||
             targetStatus.Status == Status.EXTENDED_TRACKED)
         {
-            // QR detectado
-            libraryManager.OnQRCodeDetected(qrImageTargetName);
+            // CAMBIO: Pasamos el transform del objeto (el Image Target)
+            libraryManager.OnQRCodeDetected(qrImageTargetName, this.transform);
         }
         else
         {
-            // QR perdido
             libraryManager.OnQRCodeLost();
         }
     }

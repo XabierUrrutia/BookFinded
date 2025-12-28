@@ -4,6 +4,9 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "NewBookshelf", menuName = "AR Library/Bookshelf Data")]
 public class BookshelfData : ScriptableObject
 {
+    [Header("Recursos AR")]
+    public GameObject shelfPrefab3D; // El prefab 3D de la estantería completa
+
     [Header("Identificación")]
     public string shelfID;
     public string displayName;
