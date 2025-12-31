@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f83ec9bab00f6c34b839d8a7a3f8e540, type: 3}
+  m_Name: Book17
+  m_EditorClassIdentifier: 
+  bookID: 28
+  title: Los santos inocentes
+  author: Miguel Delibes
+  isbn: 
+  publicationYear: 1485
+  theme: Literatura
+  genre: Literatura
+  shelfID: 1
+  description: "Una denuncia social brutal sobre la sumisi\xF3n y la miseria en la
+    Espa\xF1a rural de los cortijos, centrada en la humilde familia de Paco el Bajo."
+  shortDescription: 
+  coverImage: {fileID: 0}
+  bookColor: {r: 1, g: 1, b: 1, a: 1}
+  arModel: {fileID: 0}
+  audioDescription: {fileID: 0}
+  shelfNumber: 1
+  row: 1
+  column: 6
+  isReserved: 0

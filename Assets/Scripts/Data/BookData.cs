@@ -31,4 +31,7 @@ public class BookData : ScriptableObject
     public int shelfNumber;        // Número de estantería real
     public int row;               // Fila en la estantería
     public int column;            // Columna en la estantería
+
+    [Header("Estado")]
+    public bool isReserved;
 }

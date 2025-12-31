@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f83ec9bab00f6c34b839d8a7a3f8e540, type: 3}
+  m_Name: Book01
+  m_EditorClassIdentifier: 
+  bookID: 1
+  title: "C\xF3mo escuchar la m\xFAsica"
+  author: Aaron Copland
+  isbn: 
+  publicationYear: 2021
+  theme: Biography
+  genre: Music
+  shelfID: 0
+  description: "El famoso compositor nos ense\xF1a a apreciar la m\xFAsica desde
+    un punto de vista t\xE9cnico pero accesible para todos."
+  shortDescription: 
+  coverImage: {fileID: 0}
+  bookColor: {r: 1, g: 1, b: 1, a: 1}
+  arModel: {fileID: 0}
+  audioDescription: {fileID: 0}
+  shelfNumber: 0
+  row: 0
+  column: 0
+  isReserved: 0

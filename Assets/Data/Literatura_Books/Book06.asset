@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f83ec9bab00f6c34b839d8a7a3f8e540, type: 3}
-  m_Name: BookVivaldi
+  m_Name: Book06
   m_EditorClassIdentifier: 
-  bookID: 4
-  title: Vivaldi's Live
-  author: Lauren Garcia
-  isbn: 978-84-9756-248-6
-  publicationYear: 2014
-  theme: Biography
-  genre: Music
-  shelfID: 0
-  description: 
+  bookID: 20
+  title: La Regenta
+  author: "Leopoldo Alas \"Clar\xEDn\""
+  isbn: 
+  publicationYear: 1850
+  theme: Literatura
+  genre: Literatura
+  shelfID: 1
+  description: "La obra cumbre del naturalismo espa\xF1ol. Narra las pasiones, adulterio
+    y falsa moralidad de la sociedad de Vetusta a trav\xE9s de Ana Ozores."
   shortDescription: 
   coverImage: {fileID: 0}
   bookColor: {r: 1, g: 1, b: 1, a: 1}
   arModel: {fileID: 0}
   audioDescription: {fileID: 0}
-  shelfNumber: 0
+  shelfNumber: 1
   row: 0
-  column: 4
+  column: 5
+  isReserved: 1

@@ -3,9 +3,15 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class LibraryARManager : MonoBehaviour
 {
+
+    [Header("UI 3D Flotante")]
+    public GameObject infoCard3DPrefab; // Arrastra aquí el prefab que acabas de crear
+    private GameObject currentInfoCardInstance; // La tarjeta que está activa en ese momento
+
     [Header("Configuración General")]
     public Camera arCamera;
     public float uiScaleMobile = 0.003f;
@@ -30,7 +36,6 @@ public class LibraryARManager : MonoBehaviour
     public TextMeshProUGUI detailTitleText;
     public TextMeshProUGUI detailAuthorText;
     public TextMeshProUGUI detailDescriptionText;
-    public TextMeshProUGUI detailMetadataText;
     public Image detailCoverImage;
     public Button closeDetailButton;
     public Button showInARButton;
@@ -53,6 +58,95 @@ public class LibraryARManager : MonoBehaviour
         HideAllUI();
 
         Debug.Log("Sistema de Biblioteca AR inicializado");
+    }
+
+    void Update()
+    {
+        // Detectar toque en pantalla (Móvil o Ratón)
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Lanzamos el rayo
+            if (Physics.Raycast(ray, out hit))
+            {
+                // ¿Hemos tocado un libro interactivo?
+                BookInteractive clickedBook = hit.transform.GetComponent<BookInteractive>();
+
+                if (clickedBook != null)
+                {
+                    Debug.Log($"👆 Tocado libro en Fila {clickedBook.row}, Col {clickedBook.column}");
+                    SelectBookFrom3D(clickedBook.row, clickedBook.column, clickedBook.transform);
+                }
+            }
+        }
+    }
+
+    // --- MÉTODO ACTUALIZADO PARA UI 3D ---
+    void OnBookSelected(BookData book, Transform bookTransform)
+    {
+        // 1. Guardamos el libro actual y llenamos la UI 2D por si acaso (pero no la mostramos)
+        currentSelectedBook = book;
+        if (detailTitleText != null) detailTitleText.text = book.title;
+        if (detailAuthorText != null) detailAuthorText.text = $"Autor: {book.author}";
+        if (detailDescriptionText != null) detailDescriptionText.text = book.description;
+
+        // 2. Aseguramos que NO salga el canvas 2D grande
+        if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
+
+        // --- NUEVA LÓGICA 3D ---
+
+        // a) Si ya había una tarjeta flotando, la borramos
+        if (currentInfoCardInstance != null) Destroy(currentInfoCardInstance);
+
+        // b) Si el libro NO está reservado, creamos la tarjeta 3D
+        if (!book.isReserved)
+        {
+            currentInfoCardInstance = Instantiate(infoCard3DPrefab, bookTransform);
+
+            currentInfoCardInstance.transform.localPosition = new Vector3(-1f, 0, 0);
+            currentInfoCardInstance.transform.localScale = new Vector3(0.01f, 0.009f, 0.01f);
+
+            var allTexts = currentInfoCardInstance.GetComponentsInChildren<TextMeshProUGUI>();
+
+            foreach (var txt in allTexts)
+            {
+                // Opción A: Si pusiste los nombres correctos en el Prefab
+                if (txt.name == "TitleText3D") txt.text = book.title;
+                else if (txt.name == "AuthorText3D") txt.text = book.author;
+
+                // Opción B (Salvavidas): Si NO cambiaste los nombres y se llaman "Text (TMP)"
+                // Asumimos que el texto con la letra más grande es el Título
+                else if (txt.fontSize > 5) // Ajusta este número según tus tamaños
+                {
+                    // Si no hemos asignado título aún, suponemos que es este
+                    if (txt.text == "Titulo" || txt.text.Contains("New Text")) txt.text = book.title;
+                }
+                else
+                {
+                    if (txt.text == "Autor" || txt.text.Contains("New Text")) txt.text = book.author;
+                }
+            }
+        }
+
+        Debug.Log($"Seleccionado en 3D: {book.title}. Tarjeta creada.");
+    }
+
+
+    // Cambia la definición de SelectBookFrom3D por esta:
+    void SelectBookFrom3D(int row, int col, Transform bookTransform)
+    {
+        if (currentBookshelf == null) return;
+        BookData foundBook = currentBookshelf.books.Find(b => b.row == row && b.column == col);
+
+        if (foundBook != null)
+        {
+            // Pasamos el libro y SU TRANSFORM (su posición en el mundo)
+            OnBookSelected(foundBook, bookTransform);
+
+            HighlightBookIn3D();
+        }
     }
 
     void InitializeSystem()
@@ -263,26 +357,35 @@ public class LibraryARManager : MonoBehaviour
 
     void OnShowInARClicked()
     {
-        // 1. Verificación de seguridad básica
+        // 1. Verificación de seguridad
         if (currentBookshelf == null || currentTargetTransform == null)
         {
-            Debug.LogError("No se puede mostrar AR: Falta la estantería o el QR Target");
             return;
         }
 
-        Debug.Log("Ocultando UI y mostrando modelo 3D...");
-
-        // 2. FORZAR CIERRE DE UI (Aquí es donde decimos adiós a los Canvas)
+        // 2. Cerrar UI
         if (shelfCanvas != null) shelfCanvas.SetActive(false);
         if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
 
-        // 3. Instanciar o activar la estantería 3D
+        // 3. Sacar la estantería (Esto pintará los reservados en ROJO automáticamente)
         SpawnOrActivateBookshelf3D();
 
-        // 4. Resaltar el libro (si hay uno seleccionado)
+        // 4. Lógica de resaltado (Dorado/Verde)
         if (currentSelectedBook != null)
         {
-            HighlightBookIn3D();
+            // --- EL CAMBIO ESTÁ AQUÍ ---
+
+            // Solo lo iluminamos ("Aquí está") si NO está reservado
+            if (currentSelectedBook.isReserved == false)
+            {
+                HighlightBookIn3D();
+            }
+            else
+            {
+                Debug.Log($"El libro '{currentSelectedBook.title}' está reservado. No se marca en dorado.");
+                // Al no llamar a HighlightBookIn3D, se quedará con el color Rojo 
+                // que le puso el método SpawnOrActivateBookshelf3D.
+            }
         }
     }
 
@@ -299,37 +402,40 @@ public class LibraryARManager : MonoBehaviour
             // Instanciar como hijo del ImageTarget
             current3DModelInstance = Instantiate(currentBookshelf.shelfPrefab3D, currentTargetTransform);
 
-            // --- CORRECCIÓN DE POSICIÓN Y ROTACIÓN ---
+            // --- CORRECCIÓN DE POSICIÓN Y ROTACIÓN (TU CÓDIGO) ---
             current3DModelInstance.transform.localPosition = Vector3.zero;
 
-            // AQUÍ CORREGIMOS QUE SALGA AL REVÉS
-            // Prueba con (0, 180, 0) si está mirando hacia atrás.
-            // Prueba con (180, 0, 0) si está literalmente cabeza abajo.
-            // Prueba con (-90, 0, 0) si está tumbada en el suelo.
-
-            // Opción A: Girar 180 grados en vertical (Lo más habitual)
+            // Mantenemos TU rotación exacta:
             current3DModelInstance.transform.localRotation = Quaternion.Euler(180, 0, 0);
 
-            // Si la Opción A no funciona, cambia los números de arriba.
+
+            // --- NUEVO BLOQUE: PINTAR LOS RESERVADOS ---
+            // Busamos el visualizador (usamos InChildren por si usaste el contenedor, es más seguro)
+            var visualizer = current3DModelInstance.GetComponentInChildren<BookshelfVisualizer>();
+
+            if (visualizer != null)
+            {
+                // Le pasamos la lista de libros para que sepa cuáles pintar de rojo
+                visualizer.InitializeShelfStatus(currentBookshelf.books);
+            }
+            // ---------------------------------------------
         }
     }
 
     void HighlightBookIn3D()
     {
-        if (current3DModelInstance == null) return;
+        if (current3DModelInstance == null || currentSelectedBook == null) return;
 
-        // CAMBIO: Usamos GetComponentInChildren para encontrar el script
-        // aunque esté en el modelo hijo (dentro del contenedor)
         var visualizer = current3DModelInstance.GetComponentInChildren<BookshelfVisualizer>();
 
         if (visualizer != null)
         {
-            Debug.Log($"🎨 Intentando colorear libro en Fila: {currentSelectedBook.row}, Col: {currentSelectedBook.column}");
-            visualizer.HighlightBook(currentSelectedBook.row, currentSelectedBook.column);
-        }
-        else
-        {
-            Debug.LogError("❌ NO se encuentra el componente BookshelfVisualizer en el modelo 3D instanciado.");
+            // AHORA LE PASAMOS TAMBIÉN SI ES RESERVADO O NO
+            visualizer.HighlightBook(
+                currentSelectedBook.row,
+                currentSelectedBook.column,
+                currentSelectedBook.isReserved
+            );
         }
     }
 
@@ -348,7 +454,6 @@ public class LibraryARManager : MonoBehaviour
         metadata += $"Año: {book.publicationYear}\n";
         metadata += $"Género: {book.genre}\n";
         metadata += $"Tema: {book.theme}";
-        detailMetadataText.text = metadata;
 
         // Imagen de portada
         if (book.coverImage != null && detailCoverImage != null)

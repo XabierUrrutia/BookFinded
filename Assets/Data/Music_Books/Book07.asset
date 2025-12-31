@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f83ec9bab00f6c34b839d8a7a3f8e540, type: 3}
-  m_Name: BookMozart
+  m_Name: Book07
   m_EditorClassIdentifier: 
-  bookID: 0
-  title: Mozart's Live
-  author: Lauren Garcia
-  isbn: 978-84-9756-248-7
-  publicationYear: 2015
+  bookID: 7
+  title: "La m\xFAsica en el castillo del cielo"
+  author: John Eliot Gardiner
+  isbn: 
+  publicationYear: 2011
   theme: Biography
   genre: Music
   shelfID: 0
-  description: Mozart's Live is the important part of the music history
-  shortDescription: Music history
+  description: "Un retrato monumental de Johann Sebastian Bach, escrito por uno de
+    sus mejores int\xE9rpretes actuales."
+  shortDescription: 
   coverImage: {fileID: 0}
   bookColor: {r: 1, g: 1, b: 1, a: 1}
   arModel: {fileID: 0}
   audioDescription: {fileID: 0}
   shelfNumber: 0
   row: 0
-  column: 0
+  column: 6
+  isReserved: 0

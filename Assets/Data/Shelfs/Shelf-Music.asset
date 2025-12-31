@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d39424571dcf2247aeda9b2736fb7c1, type: 3}
+  m_Name: Shelf-Music
+  m_EditorClassIdentifier: 
+  shelfPrefab3D: {fileID: 4708055353662892481, guid: a03eb6b3e0d2fcb4196030a2245b03ba,
+    type: 3}
+  shelfID: 0
+  displayName: Music
+  qrImageName: qr-code
+  mainTheme: Music
+  themeDescription: Music is an importnat part of our live
+  themeColor: {r: 0.1, g: 0.3, b: 0.7, a: 1}
+  themeIcon: {fileID: 0}
+  books:
+  - {fileID: 11400000, guid: 05dca699d77f6674cb482c656a89ac53, type: 2}
+  - {fileID: 11400000, guid: 26591681f9c4fbb4a8f9363339cb3810, type: 2}
+  - {fileID: 11400000, guid: 98aa91ff5ad283c44a0783ceb270289d, type: 2}
+  - {fileID: 11400000, guid: f8253eaaa55ccd04ab1966e559b29899, type: 2}
+  - {fileID: 11400000, guid: c4b4ba735201e304a867f1474b1eba6b, type: 2}
+  - {fileID: 11400000, guid: 50df13d16baf6694b82043683aa994c4, type: 2}
+  - {fileID: 11400000, guid: cc3b2729ff3b8b040ae612c69d92f9aa, type: 2}
+  - {fileID: 11400000, guid: b005ddf42cefda041a0260e1ecee08dd, type: 2}
+  - {fileID: 11400000, guid: 1dc0742b0d0d8a54b882f62a47d8b9ae, type: 2}
+  - {fileID: 11400000, guid: 9b1e12af95a23af43ac184aecf86554b, type: 2}
+  - {fileID: 11400000, guid: eac8766da51410044b1baa0977478338, type: 2}
+  - {fileID: 11400000, guid: 02552497c43efdb4e83946d607d2ddbd, type: 2}
+  - {fileID: 11400000, guid: f25eb94f970691b4ebc3ed0a1c9b4f44, type: 2}
+  - {fileID: 11400000, guid: a2239dd80630a60498b8121554ee2fc3, type: 2}
+  totalBooks: 14
+  availableGenres:
+  - Music

@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f83ec9bab00f6c34b839d8a7a3f8e540, type: 3}
-  m_Name: BookChopin
+  m_Name: Book12
   m_EditorClassIdentifier: 
-  bookID: 1
-  title: Chopin's Live
-  author: Lauren Garcia
-  isbn: 978-84-9756-248-6
-  publicationYear: 2014
-  theme: Biography
-  genre: Music
-  shelfID: 0
-  description: 
+  bookID: 23
+  title: Niebla
+  author: Miguel de Unamuno
+  isbn: 
+  publicationYear: 1950
+  theme: Literatura
+  genre: Literatura
+  shelfID: 1
+  description: "Una \"nivola\" donde el protagonista, Augusto P\xE9rez, cobra conciencia
+    y se enfrenta a su propio autor, cuestionando su existencia."
   shortDescription: 
   coverImage: {fileID: 0}
   bookColor: {r: 1, g: 1, b: 1, a: 1}
   arModel: {fileID: 0}
   audioDescription: {fileID: 0}
-  shelfNumber: 0
-  row: 0
+  shelfNumber: 1
+  row: 1
   column: 1
+  isReserved: 1

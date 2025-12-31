@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d39424571dcf2247aeda9b2736fb7c1, type: 3}
+  m_Name: Shelf-Literatura
+  m_EditorClassIdentifier: 
+  shelfPrefab3D: {fileID: 4708055353662892481, guid: ad84f0f683fee6a43ae24fb61d350706,
+    type: 3}
+  shelfID: 1
+  displayName: Literatura
+  qrImageName: qr-code1
+  mainTheme: "LiteraturaEspa\xF1ola"
+  themeDescription: 
+  themeColor: {r: 0.1, g: 0.3, b: 0.7, a: 1}
+  themeIcon: {fileID: 0}
+  books:
+  - {fileID: 11400000, guid: 307b8780304b1594cbf06338167fcda5, type: 2}
+  - {fileID: 11400000, guid: 6d2ed0174231fae469a164a53b764570, type: 2}
+  - {fileID: 11400000, guid: 215a5190556a2614e9782b8aadb80455, type: 2}
+  - {fileID: 11400000, guid: 3fd21a84192379044b2bdd6ec9b5395d, type: 2}
+  - {fileID: 11400000, guid: d8a5f0520c737124b83dc4c7012ca9c3, type: 2}
+  - {fileID: 11400000, guid: 22db16c5bf427954aa8a653fb76b0946, type: 2}
+  - {fileID: 11400000, guid: 87c244a039a73454a9e260e22dd9e907, type: 2}
+  - {fileID: 11400000, guid: b57f40b5e83c6634190034ee6a0fa013, type: 2}
+  - {fileID: 11400000, guid: c7254395611ab3847b9a131b57570ee1, type: 2}
+  - {fileID: 11400000, guid: c887f39729e8a714fb039ec7297b2ce1, type: 2}
+  - {fileID: 11400000, guid: 38b4aa9b8ed22a14f872184d6c9b6bfb, type: 2}
+  - {fileID: 11400000, guid: 3acc5874f7cd0f94e8ce15b04d6ef9bf, type: 2}
+  - {fileID: 11400000, guid: 28688d1b8c9700d4ca4c9e512f4fa707, type: 2}
+  - {fileID: 11400000, guid: 56289425ee31b13498f8b2528d242e6b, type: 2}
+  totalBooks: 14
+  availableGenres:
+  - Literatura
