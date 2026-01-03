@@ -8,6 +8,11 @@ using UnityEngine.EventSystems;
 public class LibraryARManager : MonoBehaviour
 {
 
+    [Header("Efectos de Sonido")]
+    public AudioSource audioSource; // El "altavoz"
+    public AudioClip popSound;      // Arrastra aquí tu sonido de "Pop" o "Click"
+    public AudioClip errorSound;    // Arrastra aquí tu sonido de "Error" o "Buzzer"
+
     [Header("UI 3D Flotante")]
     public GameObject infoCard3DPrefab; // Arrastra aquí el prefab que acabas de crear
     private GameObject currentInfoCardInstance; // La tarjeta que está activa en ese momento
@@ -62,22 +67,29 @@ public class LibraryARManager : MonoBehaviour
 
     void Update()
     {
-        // Detectar toque en pantalla (Móvil o Ratón)
+        // Detectar toque en pantalla
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            // Lanzamos el rayo
             if (Physics.Raycast(ray, out hit))
             {
-                // ¿Hemos tocado un libro interactivo?
+                // 1. ¿Hemos tocado un LIBRO?
                 BookInteractive clickedBook = hit.transform.GetComponent<BookInteractive>();
-
                 if (clickedBook != null)
                 {
                     Debug.Log($"👆 Tocado libro en Fila {clickedBook.row}, Col {clickedBook.column}");
                     SelectBookFrom3D(clickedBook.row, clickedBook.column, clickedBook.transform);
+                    return; // Importante: Salimos para no seguir comprobando
+                }
+
+                // 2. ¿Hemos tocado el BOTÓN CERRAR 3D? (NUEVO)
+                CloseButtonInteractive closeBtn = hit.transform.GetComponent<CloseButtonInteractive>();
+                if (closeBtn != null)
+                {
+                    // Llamamos a la función de cerrar que creamos antes
+                    CloseEverything();
                 }
             }
         }
@@ -86,41 +98,56 @@ public class LibraryARManager : MonoBehaviour
     // --- MÉTODO ACTUALIZADO PARA UI 3D ---
     void OnBookSelected(BookData book, Transform bookTransform)
     {
-        // 1. Guardamos el libro actual y llenamos la UI 2D por si acaso (pero no la mostramos)
+        // 1. Guardamos selección
         currentSelectedBook = book;
         if (detailTitleText != null) detailTitleText.text = book.title;
-        if (detailAuthorText != null) detailAuthorText.text = $"Autor: {book.author}";
-        if (detailDescriptionText != null) detailDescriptionText.text = book.description;
-
-        // 2. Aseguramos que NO salga el canvas 2D grande
         if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
 
-        // --- NUEVA LÓGICA 3D ---
+        // --- LÓGICA DE SONIDO Y FICHA ---
 
-        // a) Si ya había una tarjeta flotando, la borramos
-        if (currentInfoCardInstance != null) Destroy(currentInfoCardInstance);
-
-        // b) Si el libro NO está reservado, creamos la tarjeta 3D
-        if (!book.isReserved)
+        if (book.isReserved)
         {
-            currentInfoCardInstance = Instantiate(infoCard3DPrefab, bookTransform);
+            // CASO 1: RESERVADO (ERROR) ⛔
+            Debug.Log("Libro reservado. Reproduciendo sonido de error.");
 
-            currentInfoCardInstance.transform.localPosition = new Vector3(-1f, 0, 0);
-            currentInfoCardInstance.transform.localScale = new Vector3(0.01f, 0.009f, 0.01f);
+            if (audioSource != null && errorSound != null)
+            {
+                audioSource.PlayOneShot(errorSound);
+            }
 
+            // Opcional: Si está reservado, quizás NO queremos borrar la ficha anterior
+            // o quizás sí. De momento, si está reservado, simplemente no hacemos nada más.
+            return;
+        }
+        else
+        {
+            // CASO 2: DISPONIBLE (POP) ✅
+            if (audioSource != null && popSound != null)
+            {
+                // PlayOneShot permite que se solapen sonidos si tocas muy rápido
+                audioSource.PlayOneShot(popSound);
+            }
+
+            // --- LÓGICA DE CREAR LA TARJETA (Tu código anterior) ---
+
+            // Si ya había una tarjeta, la borramos para poner la nueva
+            if (currentInfoCardInstance != null) Destroy(currentInfoCardInstance);
+
+            // Creamos la nueva tarjeta hija de la estantería
+            currentInfoCardInstance = Instantiate(infoCard3DPrefab, current3DModelInstance.transform);
+
+            // Posición fija abajo (la que ajustamos antes)
+            currentInfoCardInstance.transform.localPosition = new Vector3(1.5f, 0, 1f);
+            currentInfoCardInstance.transform.localScale = new Vector3(0.008f, 0.006f, 0.008f);
+
+            // Rellenar textos
             var allTexts = currentInfoCardInstance.GetComponentsInChildren<TextMeshProUGUI>();
-
             foreach (var txt in allTexts)
             {
-                // Opción A: Si pusiste los nombres correctos en el Prefab
                 if (txt.name == "TitleText3D") txt.text = book.title;
                 else if (txt.name == "AuthorText3D") txt.text = book.author;
-
-                // Opción B (Salvavidas): Si NO cambiaste los nombres y se llaman "Text (TMP)"
-                // Asumimos que el texto con la letra más grande es el Título
-                else if (txt.fontSize > 5) // Ajusta este número según tus tamaños
+                else if (txt.fontSize > 5)
                 {
-                    // Si no hemos asignado título aún, suponemos que es este
                     if (txt.text == "Titulo" || txt.text.Contains("New Text")) txt.text = book.title;
                 }
                 else
@@ -129,8 +156,12 @@ public class LibraryARManager : MonoBehaviour
                 }
             }
         }
+    }
 
-        Debug.Log($"Seleccionado en 3D: {book.title}. Tarjeta creada.");
+    // Pequeña ayuda para saber si el texto es el por defecto
+    bool IsGenericText(string t)
+    {
+        return t == "Titulo" || t == "Autor" || t.Contains("New Text");
     }
 
 
@@ -323,7 +354,8 @@ public class LibraryARManager : MonoBehaviour
         GameObject item = Instantiate(bookItemPrefab, booksListContainer);
         currentBookItems.Add(item);
 
-        // Configurar UI del item
+        // 1. CONFIGURACIÓN VISUAL (Rellenamos datos)
+        // Intentamos usar tu script auxiliar si existe para poner portada, autor, etc.
         BookItemUI itemUI = item.GetComponent<BookItemUI>();
         if (itemUI != null)
         {
@@ -331,17 +363,60 @@ public class LibraryARManager : MonoBehaviour
         }
         else
         {
-            // Configuración manual si no hay componente BookItemUI
-            TextMeshProUGUI titleText = item.transform.Find("TitleText")?.GetComponent<TextMeshProUGUI>();
-            if (titleText != null) titleText.text = book.title;
-
+            // Configuración manual de respaldo
             TextMeshProUGUI authorText = item.transform.Find("AuthorText")?.GetComponent<TextMeshProUGUI>();
             if (authorText != null) authorText.text = book.author;
+        }
 
-            UnityEngine.UI.Button button = item.GetComponent<UnityEngine.UI.Button>();
-            if (button != null)
+        // 2. BUSCAMOS LOS COMPONENTES CLAVE
+        UnityEngine.UI.Button itemButton = item.GetComponent<UnityEngine.UI.Button>();
+        TextMeshProUGUI titleText = item.transform.Find("TitleText")?.GetComponent<TextMeshProUGUI>();
+
+        // 3. LÓGICA DE BLOQUEO Y COLOR (Aquí está la magia)
+        if (book.isReserved)
+        {
+            // --- CASO: RESERVADO ⛔ ---
+
+            // A) Ponemos el texto en ROJO
+            if (titleText != null)
             {
-                button.onClick.AddListener(() => ShowBookDetail(book));
+                titleText.text = $"<color=red>{book.title} (Reservado)</color>";
+            }
+
+            // B) Controlamos el clic
+            if (itemButton != null)
+            {
+                // Limpiamos cualquier listener que haya puesto el BookItemUI para que no abra nada
+                itemButton.onClick.RemoveAllListeners();
+
+                // Añadimos SOLO el sonido de error (o nada si prefieres silencio)
+                itemButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("⛔ Intento de acceso a libro reservado bloqueado.");
+                    if (audioSource != null && errorSound != null)
+                    {
+                        audioSource.PlayOneShot(errorSound);
+                    }
+                });
+
+                // OPCIONAL: Si prefieres que el botón se vea gris y no se pueda ni clicar:
+                // itemButton.interactable = false; 
+            }
+        }
+        else
+        {
+            // --- CASO: DISPONIBLE ✅ ---
+
+            // A) Texto normal
+            if (titleText != null) titleText.text = book.title;
+
+            // B) Si no usas BookItemUI, necesitamos asignar el clic aquí.
+            // Si usas BookItemUI, es probable que ya haya asignado el clic en el 'Initialize'.
+            // Para asegurar que funciona siempre, forzamos el clic correcto aquí:
+            if (itemButton != null)
+            {
+                itemButton.onClick.RemoveAllListeners(); // Limpieza por seguridad
+                itemButton.onClick.AddListener(() => ShowBookDetail(book));
             }
         }
     }
@@ -358,33 +433,34 @@ public class LibraryARManager : MonoBehaviour
     void OnShowInARClicked()
     {
         // 1. Verificación de seguridad
-        if (currentBookshelf == null || currentTargetTransform == null)
-        {
-            return;
-        }
+        if (currentBookshelf == null || currentTargetTransform == null) return;
 
-        // 2. Cerrar UI
+        // 2. Cerrar UI 2D
         if (shelfCanvas != null) shelfCanvas.SetActive(false);
         if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
 
-        // 3. Sacar la estantería (Esto pintará los reservados en ROJO automáticamente)
+        // 3. Sacar la estantería
         SpawnOrActivateBookshelf3D();
 
-        // 4. Lógica de resaltado (Dorado/Verde)
+        // 4. Lógica de resaltado y TARJETA
         if (currentSelectedBook != null)
         {
-            // --- EL CAMBIO ESTÁ AQUÍ ---
-
-            // Solo lo iluminamos ("Aquí está") si NO está reservado
             if (currentSelectedBook.isReserved == false)
             {
+                // A) Iluminamos el libro (Visual)
                 HighlightBookIn3D();
+
+                // B) --- AQUÍ ESTABA EL FALLO ---
+                // Forzamos que aparezca la tarjeta de información inmediatamente.
+                // Pasamos 'null' como transform porque en tu nueva lógica la tarjeta
+                // se pega a la estantería, no al libro, así que no necesita el transform del libro.
+                OnBookSelected(currentSelectedBook, null);
             }
             else
             {
-                Debug.Log($"El libro '{currentSelectedBook.title}' está reservado. No se marca en dorado.");
-                // Al no llamar a HighlightBookIn3D, se quedará con el color Rojo 
-                // que le puso el método SpawnOrActivateBookshelf3D.
+                Debug.Log("El libro está reservado. Solo se muestra la estantería.");
+                // Opcional: Si quieres que suene el error también aquí:
+                if (audioSource != null && errorSound != null) audioSource.PlayOneShot(errorSound);
             }
         }
     }
@@ -403,7 +479,7 @@ public class LibraryARManager : MonoBehaviour
             current3DModelInstance = Instantiate(currentBookshelf.shelfPrefab3D, currentTargetTransform);
 
             // --- CORRECCIÓN DE POSICIÓN Y ROTACIÓN (TU CÓDIGO) ---
-            current3DModelInstance.transform.localPosition = Vector3.zero;
+            current3DModelInstance.transform.localPosition = new Vector3(-1f, 0, 0);
 
             // Mantenemos TU rotación exacta:
             current3DModelInstance.transform.localRotation = Quaternion.Euler(180, 0, 0);
@@ -560,5 +636,28 @@ public class LibraryARManager : MonoBehaviour
             "filosofía" => new Color(0.7f, 0.5f, 0.3f),
             _ => new Color(0.8f, 0.8f, 0.8f)
         };
+    }
+
+    public void CloseEverything()
+    {
+        // Borrar estantería
+        if (current3DModelInstance != null)
+        {
+            Destroy(current3DModelInstance);
+            current3DModelInstance = null;
+        }
+
+        // Borrar tarjeta flotante
+        if (currentInfoCardInstance != null)
+        {
+            Destroy(currentInfoCardInstance);
+            currentInfoCardInstance = null;
+        }
+
+        // Limpiar selección y UI
+        currentSelectedBook = null;
+        HideAllUI();
+
+        Debug.Log("❌ Estantería cerrada desde el botón 3D.");
     }
 }
