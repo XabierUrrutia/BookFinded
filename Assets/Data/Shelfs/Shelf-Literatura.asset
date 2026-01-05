@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d39424571dcf2247aeda9b2736fb7c1, type: 3}
   m_Name: Shelf-Literatura
   m_EditorClassIdentifier: 
-  shelfPrefab3D: {fileID: 4708055353662892481, guid: ad84f0f683fee6a43ae24fb61d350706,
+  shelfPrefab3D: {fileID: 4708055353662892481, guid: eefa3efa63fb6374e8051fbcf00f52d0,
     type: 3}
   shelfID: 1
   displayName: Literatura

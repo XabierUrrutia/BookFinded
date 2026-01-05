@@ -17,15 +17,34 @@ public class BookshelfVisualizer : MonoBehaviour
     public Color reservedColor = Color.red;
 
     [Header("Animación")]
-    public float popDistance = 0.15f; // Cuánto sale el libro hacia afuera
+    public float popDistance = 0.15f;
     public float animSpeed = 5f;
 
     public List<BookLocation> bookMap = new List<BookLocation>();
 
     private Renderer currentHighlighted;
-    private Transform currentAnimatedTransform; // El libro que se está moviendo
-    private Vector3 originalPosition;         // Su posición original
+    private Transform currentAnimatedTransform;
+    private Vector3 originalPosition;
     private Color savedColor;
+
+    // -----------------------------------------------------------------------
+    // ¡¡ESTE ES EL MÉTODO QUE FALTABA!! AÑÁDELO AQUÍ
+    // -----------------------------------------------------------------------
+    public Transform GetBookTransform(int row, int col)
+    {
+        // Reutilizamos tu función GetLocation para buscar el libro
+        var target = GetLocation(row, col);
+
+        // Si existe y tiene Renderer, devolvemos su Transform (su posición)
+        if (target.bookRenderer != null)
+        {
+            return target.bookRenderer.transform;
+        }
+
+        // Si no lo encuentra, devolvemos null
+        return null;
+    }
+    // -----------------------------------------------------------------------
 
     // --- INICIALIZACIÓN (Pinta rojos) ---
     public void InitializeShelfStatus(List<BookData> booksInShelf)
@@ -46,13 +65,11 @@ public class BookshelfVisualizer : MonoBehaviour
     // --- MÉTODO PRINCIPAL DE RESALTADO ---
     public void HighlightBook(int row, int col, bool isReserved)
     {
-        // 1. Si ya había uno sacado, lo devolvemos a su sitio
         ResetHighlight();
 
         var target = GetLocation(row, col);
         if (target.bookRenderer == null) return;
 
-        // Guardamos referencias
         currentHighlighted = target.bookRenderer;
         currentAnimatedTransform = target.bookRenderer.transform;
         originalPosition = currentAnimatedTransform.localPosition;
@@ -60,19 +77,13 @@ public class BookshelfVisualizer : MonoBehaviour
 
         if (isReserved)
         {
-            // SI ESTÁ RESERVADO: No cambia de color, solo vibra (Shake)
             Debug.Log("⛔ Libro reservado. Iniciando vibración.");
             StartCoroutine(AnimateShake(currentAnimatedTransform));
         }
         else
         {
-            // SI ESTÁ DISPONIBLE: Cambia a verde y SALE hacia afuera (Pop-Out)
             currentHighlighted.material.color = highlightColor;
-
-            // Calculamos la posición hacia afuera (Forward local del objeto)
-            // Si sale hacia atrás, cambia 'Vector3.back' por 'Vector3.forward'
             Vector3 targetPos = originalPosition + (Vector3.back * popDistance);
-
             StartCoroutine(AnimateMove(currentAnimatedTransform, targetPos));
         }
     }
@@ -84,15 +95,13 @@ public class BookshelfVisualizer : MonoBehaviour
         {
             StopAllCoroutines();
 
-            // --- NUEVO: Si el libro tenía una tarjeta hija, la destruimos ---
             foreach (Transform child in currentAnimatedTransform)
             {
-                if (child.name.Contains("InfoCard3D")) // Asegúrate que el prefab contiene este nombre
+                if (child.name.Contains("InfoCard3D"))
                 {
                     Destroy(child.gameObject);
                 }
             }
-            // ---------------------------------------------------------------
 
             if (currentHighlighted != null)
                 currentHighlighted.material.color = savedColor;
@@ -129,12 +138,11 @@ public class BookshelfVisualizer : MonoBehaviour
 
         while (elapsed < duration)
         {
-            // Vibra aleatoriamente
             float x = Random.Range(-0.02f, 0.02f);
             obj.localPosition = startPos + new Vector3(x, 0, 0);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        obj.localPosition = startPos; // Vuelve al sitio
+        obj.localPosition = startPos;
     }
 }

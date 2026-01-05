@@ -49,6 +49,11 @@ public class LibraryARManager : MonoBehaviour
     private GameObject current3DModelInstance; // La estantería 3D instanciada
     private BookData currentSelectedBook; // El libro que estamos viendo
 
+    // ... tus otras variables privadas ...
+    private Transform lastSelectedBookTransform;       // El último libro que tocamos
+    private Vector3 lastSelectedBookOriginalPosition;  // Su posición original
+    private Color lastSelectedBookOriginalColor;       // Su color original
+
     [Header("UI Componentes")]
     public Button closeShelfButton;
     public TMP_InputField searchInputField;
@@ -100,60 +105,55 @@ public class LibraryARManager : MonoBehaviour
     {
         // 1. Guardamos selección
         currentSelectedBook = book;
-        if (detailTitleText != null) detailTitleText.text = book.title;
-        if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
 
-        // --- LÓGICA DE SONIDO Y FICHA ---
-
+        // 2. Audio (Feedback inmediato)
         if (book.isReserved)
         {
-            // CASO 1: RESERVADO (ERROR) ⛔
-            Debug.Log("Libro reservado. Reproduciendo sonido de error.");
-
-            if (audioSource != null && errorSound != null)
-            {
-                audioSource.PlayOneShot(errorSound);
-            }
-
-            // Opcional: Si está reservado, quizás NO queremos borrar la ficha anterior
-            // o quizás sí. De momento, si está reservado, simplemente no hacemos nada más.
-            return;
+            Debug.Log("⛔ Libro reservado.");
+            if (audioSource != null && errorSound != null) audioSource.PlayOneShot(errorSound);
         }
         else
         {
-            // CASO 2: DISPONIBLE (POP) ✅
-            if (audioSource != null && popSound != null)
+            if (audioSource != null && popSound != null) audioSource.PlayOneShot(popSound);
+        }
+
+        // 3. EFECTO VISUAL (IMPORTANTE: Lo hacemos SIEMPRE, reservado o no)
+        // Esto hará que se levante y cambie de color
+        HighlightBookIn3D();
+
+        // 4. AHORA SÍ: Si está reservado, paramos aquí.
+        // El libro se habrá levantado y puesto rojo oscuro, pero no mostramos la ficha.
+        if (book.isReserved) return;
+
+
+        // --- A PARTIR DE AQUÍ SOLO PASAN LOS LIBROS DISPONIBLES ---
+
+        if (detailTitleText != null) detailTitleText.text = book.title;
+        if (bookDetailCanvas != null) bookDetailCanvas.SetActive(false);
+
+        // Si ya había una tarjeta, la borramos
+        if (currentInfoCardInstance != null) Destroy(currentInfoCardInstance);
+
+        // Creamos la nueva tarjeta
+        currentInfoCardInstance = Instantiate(infoCard3DPrefab, current3DModelInstance.transform);
+
+        // Posición y escala
+        currentInfoCardInstance.transform.localPosition = new Vector3(2.3f, 0, 1f);
+        currentInfoCardInstance.transform.localScale = new Vector3(0.008f, 0.006f, 0.008f);
+
+        // Rellenar textos
+        var allTexts = currentInfoCardInstance.GetComponentsInChildren<TextMeshProUGUI>();
+        foreach (var txt in allTexts)
+        {
+            if (txt.name == "TitleText3D") txt.text = book.title;
+            else if (txt.name == "AuthorText3D") txt.text = book.author;
+            else if (txt.fontSize > 5)
             {
-                // PlayOneShot permite que se solapen sonidos si tocas muy rápido
-                audioSource.PlayOneShot(popSound);
+                if (IsGenericText(txt.text)) txt.text = book.title;
             }
-
-            // --- LÓGICA DE CREAR LA TARJETA (Tu código anterior) ---
-
-            // Si ya había una tarjeta, la borramos para poner la nueva
-            if (currentInfoCardInstance != null) Destroy(currentInfoCardInstance);
-
-            // Creamos la nueva tarjeta hija de la estantería
-            currentInfoCardInstance = Instantiate(infoCard3DPrefab, current3DModelInstance.transform);
-
-            // Posición fija abajo (la que ajustamos antes)
-            currentInfoCardInstance.transform.localPosition = new Vector3(1.5f, 0, 1f);
-            currentInfoCardInstance.transform.localScale = new Vector3(0.008f, 0.006f, 0.008f);
-
-            // Rellenar textos
-            var allTexts = currentInfoCardInstance.GetComponentsInChildren<TextMeshProUGUI>();
-            foreach (var txt in allTexts)
+            else
             {
-                if (txt.name == "TitleText3D") txt.text = book.title;
-                else if (txt.name == "AuthorText3D") txt.text = book.author;
-                else if (txt.fontSize > 5)
-                {
-                    if (txt.text == "Titulo" || txt.text.Contains("New Text")) txt.text = book.title;
-                }
-                else
-                {
-                    if (txt.text == "Autor" || txt.text.Contains("New Text")) txt.text = book.author;
-                }
+                if (IsGenericText(txt.text)) txt.text = book.author;
             }
         }
     }
@@ -502,16 +502,64 @@ public class LibraryARManager : MonoBehaviour
     {
         if (current3DModelInstance == null || currentSelectedBook == null) return;
 
+        // A. Bajamos el libro anterior (si había uno levantado)
+        ResetLastSelectedBook();
+
+        // B. Buscamos el libro actual en la estantería 3D
         var visualizer = current3DModelInstance.GetComponentInChildren<BookshelfVisualizer>();
 
         if (visualizer != null)
         {
-            // AHORA LE PASAMOS TAMBIÉN SI ES RESERVADO O NO
-            visualizer.HighlightBook(
-                currentSelectedBook.row,
-                currentSelectedBook.column,
-                currentSelectedBook.isReserved
-            );
+            // Obtenemos el Transform del libro físico
+            Transform targetBook = visualizer.GetBookTransform(currentSelectedBook.row, currentSelectedBook.column);
+
+            if (targetBook != null)
+            {
+                // 1. Guardamos estado original
+                lastSelectedBookTransform = targetBook;
+                lastSelectedBookOriginalPosition = targetBook.localPosition;
+
+                Renderer rend = targetBook.GetComponent<Renderer>();
+                if (rend != null) lastSelectedBookOriginalColor = rend.material.color;
+
+                // 2. ANIMACIÓN: Lo sacamos hacia afuera (Eje Z negativo suele ser hacia el usuario)
+                // Ajusta el -0.15f según la escala de tu modelo
+                targetBook.localPosition += new Vector3(0, 0, -0.15f);
+
+                // 3. COLOR
+                if (rend != null)
+                {
+                    if (currentSelectedBook.isReserved)
+                    {
+                        // ROJO OSCURO para los reservados
+                        rend.material.color = new Color(0.6f, 0f, 0f);
+                    }
+                    else
+                    {
+                        // DORADO/AMARILLO para los disponibles
+                        rend.material.color = new Color(1f, 0.8f, 0f); // Dorado
+                    }
+                }
+            }
+        }
+    }
+
+    // Método nuevo para devolver el libro a su sitio
+    void ResetLastSelectedBook()
+    {
+        if (lastSelectedBookTransform != null)
+        {
+            // Restaurar posición
+            lastSelectedBookTransform.localPosition = lastSelectedBookOriginalPosition;
+
+            // Restaurar color
+            Renderer rend = lastSelectedBookTransform.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                rend.material.color = lastSelectedBookOriginalColor;
+            }
+
+            lastSelectedBookTransform = null;
         }
     }
 
